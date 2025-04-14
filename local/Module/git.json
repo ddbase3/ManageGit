@@ -1,0 +1,17 @@
+{
+	"module": "git",
+	"name": "Git",
+	"order": 800,
+	"enabled": { "authenticated": 1, "scope": [ "git" ] },
+        "icon": "plugin/Base3Manager/assets/modulenavi/tool.png",
+	"header": "standardheadercontrol",
+	"tabs": [{
+		"tab": "git",
+		"name": "Git",
+		"order": 10,
+		"enabled": 1,
+		"content": "gitcontentcontrol"
+	}],
+	"subnavi": [],
+        "toolbar": []
+}
