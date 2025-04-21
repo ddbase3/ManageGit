@@ -90,10 +90,10 @@
     }
 
     .no-select {
-        user-select: none;         /* Standard */
-        -webkit-user-select: none; /* Safari */
-        -moz-user-select: none;    /* Firefox */
-        -ms-user-select: none;     /* IE10+ */
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
     }
 
     .git-table .filter-row input {
@@ -192,9 +192,9 @@ var repoSort = JSON.parse(localStorage.getItem('repoSort') || '{}');
 
 $(document).ready(function () {
     let currentPage = 1;
-    const perPage = 10;
-    const filters = repoFilters || {};
-    const sort = repoSort || {};
+    let perPage = 10;
+    let filters = repoFilters || {};
+    let sort = repoSort || {};
     let filterValues = { ...filters };
     let currentSort = { column: sort.column || 'name', direction: sort.direction || 'asc' };
 
@@ -478,31 +478,37 @@ function renderColumnSelector() {
     });
 }
 
-$('#toggle-column-dropdown').on('click', function (e) {
-    e.stopPropagation();
-    $('#column-selector').toggleClass('open');
-});
-$(document).on('click', function (e) {
-    if (!$(e.target).closest('#toggle-column-dropdown').length && 
-        !$(e.target).closest('#column-selector').length) {
-        $('#column-selector').removeClass('open');
-    }
-});
+    $('#toggle-column-dropdown').on('click', function (e) {
+        e.stopPropagation();
+        $('#column-selector').toggleClass('open');
+    });
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#toggle-column-dropdown').length && 
+            !$(e.target).closest('#column-selector').length) {
+            $('#column-selector').removeClass('open');
+        }
+    });
 
 
-$('#reset-view').on('click', function () {
-    localStorage.removeItem('visibleColumns');
-    localStorage.removeItem('repoFilters');
-    localStorage.removeItem('repoSort');
-    location.reload();
-});
+    $('#reset-view').on('click', function () {
+        localStorage.removeItem('visibleColumns');
+        localStorage.removeItem('repoFilters');
+        localStorage.removeItem('repoSort');
+
+        filterValues = {};
+        filters = {};
+        currentSort = { column: 'name', direction: 'asc' };
+
+        buildHeaderAndFilters();
+        loadRepos();
+    });
 
 
+    renderColumnSelector();
     buildHeaderAndFilters();
     bindSort();
     bindFilterInputs();
     bindFilterClearButtons();
-    renderColumnSelector();
     loadRepos();
 });
 </script>
