@@ -200,13 +200,29 @@ function buildHeaderAndFilters() {
     const $filterRow = $('<tr class="filter-row"></tr>').append('<th></th>');
     visibleColumns.forEach(key => {
         const val = filterValues[key] || '';
-        const $input = $(`<input type="text" class="filter-input" data-filter="${key}" placeholder="Filter..." value="${val}">`);
-        const $div = $(`<div class="filter-cell"></div>`).append($input);
+        let $filterElement;
 
-        // Reset-Button
-        const $reset = $('<span class="filter-clear" style="display:none;">✕</span>');
-        if (val) $reset.show();
-        $div.append($reset);
+        if (key === 'private') {
+            $filterElement = $(`
+                <select class="filter-input" data-filter="${key}">
+                    <option value="">Alle</option>
+                    <option value="false">✅ Öffentlich</option>
+                    <option value="true">❌ Privat</option>
+                </select>
+            `);
+            $filterElement.val(val); // aktuellen Wert setzen
+        } else {
+            $filterElement = $(`<input type="text" class="filter-input" data-filter="${key}" placeholder="Filter..." value="${val}">`);
+        }
+
+        const $div = $(`<div class="filter-cell"></div>`).append($filterElement);
+
+        // Reset-Button nur bei Textfeld
+        if (key !== 'private') {
+            const $reset = $('<span class="filter-clear" style="display:none;">✕</span>');
+            if (val) $reset.show();
+            $div.append($reset);
+        }
 
         const $container = $('<th></th>').append($div);
         $filterRow.append($container);
@@ -263,7 +279,7 @@ function buildHeaderAndFilters() {
                     if (key === 'html_url') {
                         val = `<a href="${val}" target="_blank">${val}</a>`;
                     } else if (key === 'private') {
-                        const isPublic = val === false;
+                        const isPublic = val === 'false';
                         val = isPublic ? '✅' : '❌';
                     }
                     $repoRow.append(`<td>${val ?? ''}</td>`);
@@ -354,7 +370,7 @@ function bindSort() {
 
     var debounceLoadRepos = debounce(loadRepos, 300);
 function bindFilterInputs() {
-    $('.filter-input').off('input').on('input', debounce(function () {
+    $('.filter-input').off('input change').on('input change', debounce(function () {
         const $input = $(this);
         const value = $input.val().trim();
         const filter = $input.data('filter');
@@ -412,10 +428,16 @@ function renderColumnSelector() {
     });
 }
 
-$('#toggle-column-dropdown').on('click', function () {
+$('#toggle-column-dropdown').on('click', function (e) {
+    e.stopPropagation();
     $('#column-selector').toggleClass('open');
 });
-
+$(document).on('click', function (e) {
+    if (!$(e.target).closest('#toggle-column-dropdown').length && 
+        !$(e.target).closest('#column-selector').length) {
+        $('#column-selector').removeClass('open');
+    }
+});
 
     buildHeaderAndFilters();
     bindSort();

@@ -47,6 +47,13 @@ class GitConnector implements IOutput {
             return json_encode(['error' => true, 'message' => 'Invalid JSON format']);
         }
 
+        // Boolesche Werte in Strings umwandeln
+        array_walk_recursive($repos, function (&$value, $key) {
+            if (is_bool($value)) {
+                $value = $value ? 'true' : 'false'; // Umwandlung in Strings 'true'/'false'
+            }
+        });
+
         // Sortierung
         $sort = $_GET['sort'] ?? 'name';
         $direction = strtolower($_GET['direction'] ?? 'asc');
