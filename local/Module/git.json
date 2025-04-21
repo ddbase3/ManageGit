@@ -4,7 +4,7 @@
 	"order": 800,
 	"enabled": { "authenticated": 1, "scope": [ "web" ] },
         "icon": "plugin/Base3Manager/assets/modulenavi/tool.png",
-	"header": "",
+	"header": "githeadercontrol",
 	"tabs": [{
 		"tab": "git",
 		"name": "Git",

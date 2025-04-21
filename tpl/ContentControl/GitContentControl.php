@@ -18,6 +18,9 @@
         <tbody></tbody>
     </table>
     <div>
+        <div id="reset-controls">
+            <button id="reset-view" type="button">Reset</button>
+        </div>
         <div id="pagination-info"></div>
     </div>
 </div>
@@ -132,6 +135,11 @@
         margin: 0 10px;
     }
 
+    #reset-controls {
+        margin: 10px 0;
+        display:inline-block;
+    }
+
     #pagination-info {
         float: right;
         display: inline-block;
@@ -176,14 +184,19 @@ var availableColumns = [
     { key: "description", label: "Beschreibung" },
     { key: "private", label: "Öffentlich" }
 ];
-var visibleColumns = ["base3config", "name", "html_url", "default_branch"];
+var visibleColumns = JSON.parse(localStorage.getItem('visibleColumns') ?? '["base3config", "name", "html_url", "default_branch"]');
 var previousVisibleColumns = [...visibleColumns];
 
+var repoFilters = JSON.parse(localStorage.getItem('repoFilters') || '{}');
+var repoSort = JSON.parse(localStorage.getItem('repoSort') || '{}');
+
 $(document).ready(function () {
-    let filterValues = {};
     let currentPage = 1;
-    let currentSort = { column: 'name', direction: 'asc' };
     const perPage = 10;
+    const filters = repoFilters || {};
+    const sort = repoSort || {};
+    let filterValues = { ...filters };
+    let currentSort = { column: sort.column || 'name', direction: sort.direction || 'asc' };
 
     function debounce(fn, delay) {
         let timer = null;
@@ -208,7 +221,9 @@ function buildHeaderAndFilters() {
     const $headerRow = $('<tr class="repo-header"></tr>').append('<th></th>');
     visibleColumns.forEach(key => {
         const col = availableColumns.find(c => c.key === key);
-        $headerRow.append(`<th data-sort="${key}" class="no-select">${col.label}</th>`);
+        $headerField = $(`<th data-sort="${key}" class="no-select">${col.label}</th>`);
+        if (currentSort.column === key) $headerField.addClass(currentSort.direction  === 'asc' ? 'sort-asc' : 'sort-desc');
+        $headerRow.append($headerField);
     });
 
     // Filter-Zeile
@@ -233,10 +248,17 @@ function buildHeaderAndFilters() {
         const $div = $(`<div class="filter-cell"></div>`).append($filterElement);
 
         // Reset-Button nur bei Textfeld
+        var $reset = $();
         if (key !== 'private') {
-            const $reset = $('<span class="filter-clear" style="display:none;">✕</span>');
+            $reset = $('<span class="filter-clear" style="display:none;">✕</span>');
             if (val) $reset.show();
             $div.append($reset);
+        }
+
+        // Filter wiederherstellen
+        if (filters[key]) {
+            $filterElement.val(filters[key]);
+            $reset.show();
         }
 
         const $container = $('<th></th>').append($div);
@@ -278,7 +300,7 @@ function buildHeaderAndFilters() {
             const $tbody = $('#git-repo-table tbody').empty();
 
             if (!response || !Array.isArray(response.repos)) {
-                $tbody.append(`<tr><td colspan="5">Fehler beim Laden der Daten.</td></tr>`);
+                $tbody.append(`<tr><td colspan="${visibleColumns.length + 1}">Fehler beim Laden der Daten.</td></tr>`);
                 $('#page-info').text("Fehler beim Laden");
                 return;
             }
@@ -300,37 +322,37 @@ function buildHeaderAndFilters() {
                     $repoRow.append(`<td>${val ?? ''}</td>`);
                 });
 
-                const $branchRow = $(`
-                    <tr id="${branchRowId}" class="branch-row" data-parent="${repoId}">
-                        <td colspan="5">
-                            <table class="branch-table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Protected</th>
-                                        <th>Default</th>
-                                        <th>Letzter Commit</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${(repo.branches || []).map(branch => `
-                                        <tr>
-                                            <td>${branch.name}</td>
-                                            <td>${branch.protected ? '✅' : '❌'}</td>
-                                            <td>${branch.is_default ? '✅' : ''}</td>
-                                            <td>
-                                                <div><strong>${branch.last_commit?.message || ''}</strong></div>
-                                                <div>${branch.last_commit?.author?.name || ''} &lt;${branch.last_commit?.author?.email || ''}&gt;</div>
-                                                <div>${branch.last_commit?.date || ''}</div>
-                                                <div><a href="${branch.last_commit?.url || '#'}" target="_blank">View Commit</a></div>
-                                            </td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </td>
+const $branchRow = $(`
+    <tr id="${branchRowId}" class="branch-row" data-parent="${repoId}">
+        <td colspan="${visibleColumns.length + 1}">
+            <table class="branch-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Protected</th>
+                        <th>Default</th>
+                        <th>Letzter Commit</th>
                     </tr>
-                `);
+                </thead>
+                <tbody>
+                    ${(repo.branches || []).map(branch => `
+                        <tr>
+                            <td>${branch.name}</td>
+                            <td>${branch.protected === 'true' ? '✅' : '❌'}</td>
+                            <td>${branch.is_default === 'true' ? '✅' : ''}</td>
+                            <td>
+                                <div><strong>${branch.last_commit?.message || ''}</strong></div>
+                                <div>${branch.last_commit?.author?.name || ''} &lt;${branch.last_commit?.author?.email || ''}&gt;</div>
+                                <div>${branch.last_commit?.date || ''}</div>
+                                <div><a href="${branch.last_commit?.url || '#'}" target="_blank">View Commit</a></div>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </td>
+    </tr>
+`);
 
                 $tbody.append($repoRow).append($branchRow);
             });
@@ -383,6 +405,8 @@ function bindSort() {
         $thead.find('th').removeClass('sort-asc sort-desc');
         $(this).addClass(newDirection === 'asc' ? 'sort-asc' : 'sort-desc');
 
+        localStorage.setItem('repoSort', JSON.stringify(currentSort));
+
         currentPage = 1;
         loadRepos();
     });
@@ -397,11 +421,15 @@ function bindFilterInputs() {
 
         if (value) {
             filterValues[filter] = value;
+            filters[filter] = value;
             $input.siblings('.filter-clear').show();
         } else {
             delete filterValues[filter];
+            delete filters[filter];
             $input.siblings('.filter-clear').hide();
         }
+
+        localStorage.setItem('repoFilters', JSON.stringify(filters));
 
         currentPage = 1;
         debounceLoadRepos();
@@ -443,6 +471,8 @@ function renderColumnSelector() {
             visibleColumns = visibleColumns.filter(c => c !== key);
         }
 
+        localStorage.setItem('visibleColumns', JSON.stringify(visibleColumns));
+
         currentPage = 1;
         loadRepos();
     });
@@ -458,6 +488,15 @@ $(document).on('click', function (e) {
         $('#column-selector').removeClass('open');
     }
 });
+
+
+$('#reset-view').on('click', function () {
+    localStorage.removeItem('visibleColumns');
+    localStorage.removeItem('repoFilters');
+    localStorage.removeItem('repoSort');
+    location.reload();
+});
+
 
     buildHeaderAndFilters();
     bindSort();
