@@ -2,26 +2,34 @@
 <div id="GitContentControl" class="contentcontrol">
 
 <div id="git-repo-table-container">
-    <h2>Git Repositories</h2>
-    <div id="pagination-controls" style="margin-bottom: 10px;">
-        <button id="prev-page" type="button">Zurück</button>
-        <span id="page-info">Seite 1</span>
-        <button id="next-page" type="button">Weiter</button>
-    </div>
-    <div id="column-selector" class="dropdown">
-        <button id="toggle-column-dropdown" type="button">Spalten wählen ⬇</button>
-        <div id="column-options" class="dropdown-content"></div>
+    <div>
+        <div id="pagination-controls">
+            <button id="prev-page" type="button">Zurück</button>
+            <span id="page-info"></span>
+            <button id="next-page" type="button">Weiter</button>
+        </div>
+        <div id="column-selector" class="dropdown">
+            <button id="toggle-column-dropdown" type="button">Spalten wählen ⬇</button>
+            <div id="column-options" class="dropdown-content"></div>
+        </div>
     </div>
     <table id="git-repo-table" class="git-table">
         <thead></thead>
         <tbody></tbody>
     </table>
+    <div>
+        <div id="pagination-info"></div>
+    </div>
 </div>
 
 </div>
 </div>
 
 <style>
+    #git-repo-table-container {
+        margin-top: 10px;
+    }
+
     .git-table {
         width: 100%;
         border-collapse: collapse;
@@ -116,11 +124,18 @@
     }
 
     #pagination-controls {
-        text-align: center;
+        float: right;
+        display: inline-block;
     }
 
-    #pagination-controls button {
+    #pagination-controls #page-info {
         margin: 0 10px;
+    }
+
+    #pagination-info {
+        float: right;
+        display: inline-block;
+        margin: 10px 0;
     }
 
     #column-selector {
@@ -330,6 +345,11 @@ function buildHeaderAndFilters() {
             $('#page-info').text(`Seite ${response.page} von ${response.totalPages}`);
             $('#prev-page').prop('disabled', response.page <= 1);
             $('#next-page').prop('disabled', response.page >= response.totalPages);
+
+            // Paginierings-Info
+            var from = (response.page - 1) * response.perPage + 1;
+            var to = Math.min(from + response.perPage - 1, response.total);
+            $('#pagination-info').text(`Datensätze ${from} bis ${to} von ${response.total}`);;
         }).fail(function () {
             $('#git-repo-table tbody').html(`<tr><td colspan="5">Fehler beim Abrufen der Daten.</td></tr>`);
             $('#page-info').text("Fehler beim Abrufen");
