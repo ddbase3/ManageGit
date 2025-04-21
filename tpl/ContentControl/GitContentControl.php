@@ -8,23 +8,12 @@
         <span id="page-info">Seite 1</span>
         <button id="next-page" type="button">Weiter</button>
     </div>
+    <div id="column-selector" class="dropdown">
+        <button id="toggle-column-dropdown" type="button">Spalten wählen ⬇</button>
+        <div id="column-options" class="dropdown-content"></div>
+    </div>
     <table id="git-repo-table" class="git-table">
-        <thead>
-            <tr>
-                <th></th>
-                <th class="no-select" data-sort="base3config">Account</th>
-                <th class="no-select" data-sort="name">Name</th>
-                <th class="no-select" data-sort="html_url">Link</th>
-                <th class="no-select" data-sort="default_branch">Default Branch</th>
-            </tr>
-            <tr class="filter-row">
-                <th></th>
-                <th><div class="filter-cell"><input class="filter-input" data-column="base3config"><span class="filter-clear">✕</span></div></th>
-                <th><div class="filter-cell"><input class="filter-input" data-column="name"><span class="filter-clear">✕</span></div></th>
-                <th><div class="filter-cell"><input class="filter-input" data-column="html_url"><span class="filter-clear">✕</span></div></th>
-                <th><div class="filter-cell"><input class="filter-input" data-column="default_branch"><span class="filter-clear">✕</span></div></th>
-            </tr>
-        </thead>
+        <thead></thead>
         <tbody></tbody>
     </table>
 </div>
@@ -133,9 +122,48 @@
     #pagination-controls button {
         margin: 0 10px;
     }
+
+    #column-selector {
+        min-width: 220px;
+        position: relative;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+
+    #column-selector option {
+        white-space: nowrap;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 10px;
+        z-index: 100;
+    }
+
+    .dropdown-content label {
+        display: block;
+    }
+
+    #column-selector.open .dropdown-content {
+        display: block;
+    }
 </style>
 
 <script>
+var availableColumns = [
+    { key: "base3config", label: "Account" },
+    { key: "name", label: "Name" },
+    { key: "html_url", label: "Link" },
+    { key: "default_branch", label: "Default Branch" },
+    { key: "description", label: "Beschreibung" },
+    { key: "private", label: "Öffentlich" }
+];
+var visibleColumns = ["base3config", "name", "html_url", "default_branch"];
+var previousVisibleColumns = [...visibleColumns];
+
 $(document).ready(function () {
     let filterValues = {};
     let currentPage = 1;
@@ -150,6 +178,53 @@ $(document).ready(function () {
         };
     }
 
+    function arraysEqual(a, b) {
+        return a.length === b.length && a.every((val, i) => val === b[i]);
+    }
+
+
+
+
+function buildHeaderAndFilters() {
+    const $thead = $('#git-repo-table thead');
+    $thead.find('tr.repo-header, tr.filter-row').remove();
+
+    // Header-Zeile
+    const $headerRow = $('<tr class="repo-header"></tr>').append('<th></th>');
+    visibleColumns.forEach(key => {
+        const col = availableColumns.find(c => c.key === key);
+        $headerRow.append(`<th data-sort="${key}" class="no-select">${col.label}</th>`);
+    });
+
+    // Filter-Zeile
+    const $filterRow = $('<tr class="filter-row"></tr>').append('<th></th>');
+    visibleColumns.forEach(key => {
+        const val = filterValues[key] || '';
+        const $input = $(`<input type="text" class="filter-input" data-filter="${key}" placeholder="Filter..." value="${val}">`);
+        const $div = $(`<div class="filter-cell"></div>`).append($input);
+
+        // Reset-Button
+        const $reset = $('<span class="filter-clear" style="display:none;">✕</span>');
+        if (val) $reset.show();
+        $div.append($reset);
+
+        const $container = $('<th></th>').append($div);
+        $filterRow.append($container);
+    });
+
+    // Einfügen
+    $thead.append($headerRow);
+    $thead.append($filterRow);
+
+
+    bindSort();
+    bindFilterInputs();
+    bindFilterClearButtons();
+}
+
+
+
+
     function loadRepos() {
         const params = {
             name: 'gitconnector',
@@ -162,6 +237,11 @@ $(document).ready(function () {
         Object.entries(filterValues).forEach(([key, value]) => {
             if (value) params[`filter[${key}]`] = value;
         });
+
+        if (!arraysEqual(visibleColumns, previousVisibleColumns)) {
+            buildHeaderAndFilters();
+            previousVisibleColumns = [...visibleColumns];
+        }
 
         $.getJSON("?" + $.param(params), function (response) {
             const $tbody = $('#git-repo-table tbody').empty();
@@ -176,15 +256,18 @@ $(document).ready(function () {
                 const repoId = 'repo-' + index;
                 const branchRowId = 'branch-row-' + index;
 
-                const $repoRow = $(`
-                    <tr class="repo-row" data-id="${repoId}">
-                        <td><span class="expand-button no-select" data-target="${branchRowId}">▶</span></td>
-                        <td>${repo.base3config}</td>
-                        <td>${repo.name}</td>
-                        <td><a href="${repo.html_url}" target="_blank">${repo.html_url}</a></td>
-                        <td>${repo.default_branch}</td>
-                    </tr>
-                `);
+                const $repoRow = $('<tr class="repo-row" data-id="' + repoId + '">');
+                $repoRow.append(`<td><span class="expand-button no-select" data-target="${branchRowId}">▶</span></td>`);
+                visibleColumns.forEach(key => {
+                    let val = repo[key];
+                    if (key === 'html_url') {
+                        val = `<a href="${val}" target="_blank">${val}</a>`;
+                    } else if (key === 'private') {
+                        const isPublic = val === false;
+                        val = isPublic ? '✅' : '❌';
+                    }
+                    $repoRow.append(`<td>${val ?? ''}</td>`);
+                });
 
                 const $branchRow = $(`
                     <tr id="${branchRowId}" class="branch-row" data-parent="${repoId}">
@@ -237,21 +320,6 @@ $(document).ready(function () {
         });
     }
 
-    // Sortierung per Header
-    $('#git-repo-table thead th[data-sort]').on('click', function (e) {
-        e.preventDefault();
-        const sortKey = $(this).data('sort');
-        const isSameColumn = currentSort.column === sortKey;
-        const newDirection = isSameColumn && currentSort.direction === 'asc' ? 'desc' : 'asc';
-        currentSort = { column: sortKey, direction: newDirection };
-
-        $('#git-repo-table thead th').removeClass('sort-asc sort-desc');
-        $(this).addClass(newDirection === 'asc' ? 'sort-asc' : 'sort-desc');
-
-        currentPage = 1;
-        loadRepos();
-    });
-
     // Paging-Buttons mit preventDefault + type="button"
     $('#prev-page').on('click', function (e) {
         e.preventDefault();
@@ -267,37 +335,93 @@ $(document).ready(function () {
         loadRepos();
     });
 
-    const debounceLoadRepos = debounce(loadRepos, 300);
-    $('.filter-input').on('input', debounce(function () {
+function bindSort() {
+    const $thead = $('#git-repo-table thead');
+    $thead.find('th[data-sort]').off('click').on('click', function (e) {
+        e.preventDefault();
+        const sortKey = $(this).data('sort');
+        const isSameColumn = currentSort.column === sortKey;
+        const newDirection = isSameColumn && currentSort.direction === 'asc' ? 'desc' : 'asc';
+        currentSort = { column: sortKey, direction: newDirection };
+
+        $thead.find('th').removeClass('sort-asc sort-desc');
+        $(this).addClass(newDirection === 'asc' ? 'sort-asc' : 'sort-desc');
+
+        currentPage = 1;
+        loadRepos();
+    });
+}
+
+    var debounceLoadRepos = debounce(loadRepos, 300);
+function bindFilterInputs() {
+    $('.filter-input').off('input').on('input', debounce(function () {
         const $input = $(this);
         const value = $input.val().trim();
-        const column = $input.data('column');
+        const filter = $input.data('filter');
 
         if (value) {
-            filterValues[column] = value;
+            filterValues[filter] = value;
             $input.siblings('.filter-clear').show();
         } else {
-            delete filterValues[column];
+            delete filterValues[filter];
             $input.siblings('.filter-clear').hide();
         }
 
         currentPage = 1;
         debounceLoadRepos();
     }, 300));
+}
 
-    $('.filter-clear').on('click', function () {
+function bindFilterClearButtons() {
+    $('.filter-clear').off('click').on('click', function () {
         const $clear = $(this);
         const $input = $clear.siblings('.filter-input');
-        const column = $input.data('column');
+        const key = $input.data('filter');
 
         $input.val('').focus();
         $clear.hide();
-        delete filterValues[column];
+        filterValues[key] = '';
 
         currentPage = 1;
         loadRepos();
     });
+}
 
+function renderColumnSelector() {
+    const $container = $('#column-options').empty();
+    availableColumns.forEach(col => {
+        const isChecked = visibleColumns.includes(col.key);
+        const $checkbox = $(`
+            <label>
+                <input type="checkbox" value="${col.key}" ${isChecked ? 'checked' : ''}> ${col.label}
+            </label>
+        `);
+        $container.append($checkbox);
+    });
+
+    $container.find('input[type="checkbox"]').on('change', function () {
+        const key = $(this).val();
+        if (this.checked) {
+            if (!visibleColumns.includes(key)) visibleColumns.push(key);
+        } else {
+            visibleColumns = visibleColumns.filter(c => c !== key);
+        }
+
+        currentPage = 1;
+        loadRepos();
+    });
+}
+
+$('#toggle-column-dropdown').on('click', function () {
+    $('#column-selector').toggleClass('open');
+});
+
+
+    buildHeaderAndFilters();
+    bindSort();
+    bindFilterInputs();
+    bindFilterClearButtons();
+    renderColumnSelector();
     loadRepos();
 });
 </script>
