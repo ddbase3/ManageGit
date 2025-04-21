@@ -21,6 +21,5 @@ class GitContentControl extends AbstractContentControl {
         protected function getTemplate(): string {
                 return 'ContentControl/GitContentControl.php';
         }
-
 }
 
