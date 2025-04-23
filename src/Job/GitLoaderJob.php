@@ -8,56 +8,52 @@ use Base3\Api\ICheck;
 
 class GitLoaderJob implements IJob, ICheck {
 
-    private $configuration;
+	private $configuration;
 
-    public function __construct(IConfiguration $configuration) {
-        $this->configuration = $configuration;
-    }
+	private $nextRun = 6 * 3600;
+
+	public function __construct(IConfiguration $configuration) {
+		$this->configuration = $configuration;
+	}
 
 	// Implementation of IBase
 
-    public function getName(): string {
-        return 'gitloaderjob';
-    }
+	public function getName(): string {
+		return 'gitloaderjob';
+	}
 
 	// Implementation of IJob
 
-    public function isActive() {
-        return true;
-    }
+	public function isActive() {
+		return true;
+	}
 
-    public function getPriority() {
-        return 1;
-    }
+	public function getPriority() {
+		return 1;
+	}
 
-public function go() {
-    $dataDir = $this->getDataDir();
-    if (!strlen($dataDir)) return 'data dir undefined';
+	public function go() {
+		$dataDir = $this->getDataDir();
+		if (!strlen($dataDir)) return 'data dir undefined';
 
-    $nextRunFile = $this->getNextRunFile();
-    $now = time();
-    $nextRun = is_file($nextRunFile) ? intval(file_get_contents($nextRunFile)) : 0;
+		$nextRunFile = $this->getNextRunFile();
+		$now = time();
+		$nextRun = is_file($nextRunFile) ? intval(file_get_contents($nextRunFile)) : 0;
+		if ($now < $nextRun) return 'skipped (next run: ' . date('c', $nextRun) . ')';
+		file_put_contents($nextRunFile, strval($now + $this->nextRun));
 
-    if ($now < $nextRun) {
-        return 'skipped (next run: ' . date('c', $nextRun) . ')';
-    }
-
-    $result = $this->loadRepositories();
-
-    // Nächste Ausführung in 1 Stunde
-    file_put_contents($nextRunFile, strval($now + 3600));
-
-    return $result;
-}
+		$result = $this->loadRepositories();
+		return $result;
+	}
 
 	// Implementation of ICheck
 
-    public function checkDependencies() {
-        return array(
-            'managegit_dir_defined' => strlen($this->getDataDir()) ? 'Ok' : 'managegit dir not defined',
-            'managegit_dir_writable' => is_writable($this->getDataDir()) ? 'Ok' : 'managegit dir not writable'
-        );
-    }
+	public function checkDependencies() {
+		return array(
+			'managegit_dir_defined' => strlen($this->getDataDir()) ? 'Ok' : 'managegit dir not defined',
+			'managegit_dir_writable' => is_writable($this->getDataDir()) ? 'Ok' : 'managegit dir not writable'
+		);
+	}
 
 	// Private methods
 
@@ -113,33 +109,25 @@ private function filterRepositoryData(array $repo): array {
         'archive_url', 'downloads_url', 'issues_url', 'pulls_url', 'milestones_url',
         'notifications_url', 'labels_url', 'releases_url', 'deployments_url',
     ];
-
-    foreach ($keysToRemove as $key) {
-        unset($repo[$key]);
-    }
-
+    foreach ($keysToRemove as $key) unset($repo[$key]);
     return $repo;
 }
 
-private function filterUserData(array $user): array {
-    $keysToRemove = [
-        'followers_url', 'following_url', 'gists_url', 'starred_url', 'subscriptions_url',
-        'organizations_url', 'repos_url', 'events_url', 'received_events_url',
-    ];
+	private function filterUserData(array $user): array {
+		$keysToRemove = [
+			'followers_url', 'following_url', 'gists_url', 'starred_url', 'subscriptions_url',
+			'organizations_url', 'repos_url', 'events_url', 'received_events_url',
+		];
+		foreach ($keysToRemove as $key) unset($user[$key]);
+		return $user;
+	}
 
-    foreach ($keysToRemove as $key) {
-        unset($user[$key]);
-    }
-
-    return $user;
-}
-
-    private function getDataDir() {
-        $directories = $this->configuration->get('directories');
-        return isset($directories['data'])
-            ? $directories['data'] . DIRECTORY_SEPARATOR . 'managegit' . DIRECTORY_SEPARATOR
-            : '';
-    }
+	private function getDataDir() {
+		$directories = $this->configuration->get('directories');
+		return isset($directories['data'])
+			? $directories['data'] . DIRECTORY_SEPARATOR . 'managegit' . DIRECTORY_SEPARATOR
+			: '';
+	}
 
     private function getRepositories($token, $endpoint) {
         $repositories = [];
