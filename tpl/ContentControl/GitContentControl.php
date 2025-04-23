@@ -182,7 +182,12 @@ var availableColumns = [
     { key: "html_url", label: "Link" },
     { key: "default_branch", label: "Default Branch" },
     { key: "description", label: "Beschreibung" },
-    { key: "private", label: "Öffentlich" }
+    { key: "private", label: "Öffentlich" },
+    { key: "base3utf8", label: "Topic base3-utf8" },
+    { key: "base3site", label: "Topic base3-site" },
+    { key: "base3manager", label: "Topic base3-manager" },
+    { key: "base3public", label: "Topic base3-public" },
+    { key: "base3private", label: "Topic base3-private" }
 ];
 var visibleColumns = JSON.parse(localStorage.getItem('visibleColumns') ?? '["base3config", "name", "html_url", "default_branch"]');
 var previousVisibleColumns = [...visibleColumns];
@@ -238,6 +243,15 @@ function buildHeaderAndFilters() {
                     <option value="">Alle</option>
                     <option value="false">✅ Öffentlich</option>
                     <option value="true">❌ Privat</option>
+                </select>
+            `);
+            $filterElement.val(val); // aktuellen Wert setzen
+        } else if (['base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private'].includes(key)) {
+            $filterElement = $(`
+                <select class="filter-input" data-filter="${key}">
+                    <option value="">Alle</option>
+                    <option value="true">✅ Ja</option>
+                    <option value="false">❌ Nein</option>
                 </select>
             `);
             $filterElement.val(val); // aktuellen Wert setzen
@@ -318,6 +332,9 @@ function buildHeaderAndFilters() {
                     } else if (key === 'private') {
                         const isPublic = val === 'false';
                         val = isPublic ? '✅' : '❌';
+                    } else if (['base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private'].includes(key)) {
+                        const hasUtf8 = val === 'true';
+                        val = hasUtf8 ? '✅' : '❌';
                     }
                     $repoRow.append(`<td>${val ?? ''}</td>`);
                 });
@@ -357,7 +374,8 @@ const $branchRow = $(`
                 $tbody.append($repoRow).append($branchRow);
             });
 
-            $('.expand-button').on('click', function () {
+            $('.expand-button').on('click', function (e) {
+                e.stopPropagation();
                 const targetId = $(this).data('target');
                 $('.branch-row').not(`#${targetId}`).hide();
                 $(`#${targetId}`).toggle();
@@ -489,7 +507,6 @@ function renderColumnSelector() {
         }
     });
 
-
     $('#reset-view').on('click', function () {
         localStorage.removeItem('visibleColumns');
         localStorage.removeItem('repoFilters');
@@ -498,6 +515,8 @@ function renderColumnSelector() {
         filterValues = {};
         filters = {};
         currentSort = { column: 'name', direction: 'asc' };
+        visibleColumns = ["base3config", "name", "html_url", "default_branch"];
+        previousVisibleColumns = [...visibleColumns];
 
         buildHeaderAndFilters();
         loadRepos();

@@ -47,6 +47,17 @@ class GitConnector implements IOutput {
             return json_encode(['error' => true, 'message' => 'Invalid JSON format']);
         }
 
+        // topics
+        foreach ($repos as &$repo) {
+            $topics = $repo['topics'] ?? [];
+            $repo['base3utf8'] = in_array('base3-utf8', $topics) ? 'true' : 'false';
+            $repo['base3site'] = in_array('base3-site', $topics) ? 'true' : 'false';
+            $repo['base3manager'] = in_array('base3-manager', $topics) ? 'true' : 'false';
+            $repo['base3public'] = in_array('base3-public', $topics) ? 'true' : 'false';
+            $repo['base3private'] = in_array('base3-private', $topics) ? 'true' : 'false';
+        }
+        unset($repo);
+
         // Boolesche Werte in Strings umwandeln
         array_walk_recursive($repos, function (&$value, $key) {
             if (is_bool($value)) {
