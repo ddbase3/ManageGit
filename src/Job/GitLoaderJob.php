@@ -144,6 +144,12 @@ class GitLoaderJob implements IJob, ICheck {
 			$data = $this->request($url, $token, $platform);
 			if (!is_array($data)) break;
 
+			// gitlab
+			foreach ($data as $key => $repo) {
+				if (isset($repo['web_url']) && !isset($repo['html_url']))
+					$data[$key]['html_url'] = $repo['web_url'];
+			}
+
 			$repositories = array_merge($repositories, $data);
 			$page++;
 		} while (count($data) === $perPage);
@@ -151,7 +157,7 @@ class GitLoaderJob implements IJob, ICheck {
 		return [ 'error' => 0, 'msg' => '', 'data' => $repositories ];
 	}
 
-	private function getBranches($reipo, $token, $endpoint, $platform) {
+	private function getBranches($repo, $token, $endpoint, $platform) {
 		$branches = [];
 
 		if ($platform === 'github') {
