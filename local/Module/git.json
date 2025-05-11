@@ -11,6 +11,12 @@
 		"order": 10,
 		"enabled": 1,
 		"content": "gitcontentcontrol"
+	}, {
+		"tab": "gitstats",
+		"name": "Git Stats",
+		"order": 20,
+		"enabled": 1,
+		"content": "gitstatscontentcontrol"
 	}],
 	"subnavi": [],
         "toolbar": []
