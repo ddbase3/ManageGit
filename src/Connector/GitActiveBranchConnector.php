@@ -42,11 +42,11 @@ class GitActiveBranchConnector implements IOutput {
             return json_encode(['error' => true, 'message' => 'Invalid JSON format']);
         }
 
-        // Zähle Default-Branch-Namen
+        // Zähle nur relevante Branches
         $counts = [];
         foreach ($repos as $repo) {
             $defaultBranch = $repo['default_branch'] ?? null;
-            if ($defaultBranch) {
+            if ($defaultBranch && $this->isValidBranch($defaultBranch)) {
                 if (!isset($counts[$defaultBranch])) {
                     $counts[$defaultBranch] = 0;
                 }
@@ -63,6 +63,7 @@ class GitActiveBranchConnector implements IOutput {
             ];
         }
 
+        // Sortiere nach Branch-Namen
         usort($result, function($a, $b) {
             if ($a['branch'] == $b['branch']) return 0;
             return $a['branch'] < $b['branch'] ? -1 : 1;
@@ -72,7 +73,14 @@ class GitActiveBranchConnector implements IOutput {
     }
 
     public function getHelp() {
-        return "Gibt die Anzahl Repositories pro Default-Branch aus. Format: [{branch: 'main', count: 3}, ...]";
+        return "Gibt die Anzahl Repositories pro Default-Branch aus, für Branches wie 'main', 'master', 'v1', 'v2', '54', '54_dev', etc. Format: [{branch: 'main', count: 3}, ...]";
+    }
+
+    // Prüft, ob der Branch-Name den erlaubten Mustern entspricht
+    private function isValidBranch(string $branch): bool {
+        // Muster: main, master, v1, v2, ..., 54, 54_dev, 6, 6_dev, 7, 7_dev, ...
+        $pattern = '/^(main|master|v\d+|\d+(_dev)?)$/';
+        return preg_match($pattern, $branch) === 1;
     }
 }
 
