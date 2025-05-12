@@ -228,7 +228,6 @@ class GitLoaderJob implements IJob, ICheck {
 				$repo['owner'] = $this->filterUserData($repo['owner']);
 			}
 			$keysToRemove = [
-				// viele GitHub-spezifische URLs, wie in deiner ursprünglichen Version
 				'forks_url', 'keys_url', 'collaborators_url', 'teams_url', 'hooks_url', 'issue_events_url',
 				'events_url', 'assignees_url', 'branches_url', 'tags_url', 'blobs_url', 'git_tags_url',
 				'git_refs_url', 'trees_url', 'statuses_url', 'languages_url', 'stargazers_url',

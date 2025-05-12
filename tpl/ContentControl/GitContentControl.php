@@ -182,7 +182,10 @@ var availableColumns = [
     { key: "html_url", label: "Link" },
     { key: "default_branch", label: "Default Branch" },
     { key: "description", label: "Beschreibung" },
+    { key: "language", label: "Tech-Stack" },
+    { key: "homepage", label: "Homepage" },
     { key: "private", label: "Öffentlich" },
+    { key: "archived", label: "Archiviert" },
     { key: "base3utf8", label: "Topic base3-utf8" },
     { key: "base3site", label: "Topic base3-site" },
     { key: "base3manager", label: "Topic base3-manager" },
@@ -247,7 +250,7 @@ function buildHeaderAndFilters() {
                 </select>
             `);
             $filterElement.val(val); // aktuellen Wert setzen
-        } else if (['base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private', 'base3packagist'].includes(key)) {
+        } else if (['archived', 'base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private', 'base3packagist'].includes(key)) {
             $filterElement = $(`
                 <select class="filter-input" data-filter="${key}">
                     <option value="">Alle</option>
@@ -330,10 +333,12 @@ function buildHeaderAndFilters() {
                     let val = repo[key];
                     if (key === 'html_url') {
                         val = `<a href="${val}" target="_blank">${val}</a>`;
+                    } else if (key === 'homepage') {
+                        val = val && val.length ? `<a href="${val}" target="_blank" style="display:inline-block; padding:0 5px; text-decoration:none; font-size:14px;">🌎</a>` : `&nbsp;`;
                     } else if (key === 'private') {
                         const isPublic = val === 'false';
                         val = isPublic ? '✅' : '❌';
-                    } else if (['base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private', 'packagist'].includes(key)) {
+                    } else if (['archived', 'base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private', 'base3packagist'].includes(key)) {
                         const hasUtf8 = val === 'true';
                         val = hasUtf8 ? '✅' : '❌';
                     }
