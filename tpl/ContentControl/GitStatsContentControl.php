@@ -20,8 +20,6 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
     urlActiveBranch = '?name=gitactivebranchconnector&out=json';
     urlActivity = '?name=gitactivityconnector&out=json';
