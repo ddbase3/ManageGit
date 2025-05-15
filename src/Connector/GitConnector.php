@@ -56,6 +56,7 @@ class GitConnector implements IOutput {
             $repo['base3public'] = in_array('base3-public', $topics) ? 'true' : 'false';
             $repo['base3private'] = in_array('base3-private', $topics) ? 'true' : 'false';
             $repo['base3packagist'] = in_array('base3-packagist', $topics) ? 'true' : 'false';
+            $repo['base3start'] = in_array('base3-start', $topics) ? 'true' : 'false';
         }
         unset($repo);
 

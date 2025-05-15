@@ -191,7 +191,8 @@ var availableColumns = [
     { key: "base3manager", label: "Topic base3-manager" },
     { key: "base3public", label: "Topic base3-public" },
     { key: "base3private", label: "Topic base3-private" },
-    { key: "base3packagist", label: "Topic base3-packagist" }
+    { key: "base3packagist", label: "Topic base3-packagist" },
+    { key: "base3start", label: "Topic base3-start" }
 ];
 var visibleColumns = JSON.parse(localStorage.getItem('visibleColumns') ?? '["base3config", "name", "html_url", "default_branch"]');
 var previousVisibleColumns = [...visibleColumns];
@@ -250,7 +251,7 @@ function buildHeaderAndFilters() {
                 </select>
             `);
             $filterElement.val(val); // aktuellen Wert setzen
-        } else if (['archived', 'base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private', 'base3packagist'].includes(key)) {
+        } else if (['archived', 'base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private', 'base3packagist', 'base3start'].includes(key)) {
             $filterElement = $(`
                 <select class="filter-input" data-filter="${key}">
                     <option value="">Alle</option>
@@ -338,7 +339,7 @@ function buildHeaderAndFilters() {
                     } else if (key === 'private') {
                         const isPublic = val === 'false';
                         val = isPublic ? '✅' : '❌';
-                    } else if (['archived', 'base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private', 'base3packagist'].includes(key)) {
+                    } else if (['archived', 'base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private', 'base3packagist', 'base3start'].includes(key)) {
                         const hasUtf8 = val === 'true';
                         val = hasUtf8 ? '✅' : '❌';
                     }
