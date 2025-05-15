@@ -186,6 +186,7 @@ var availableColumns = [
     { key: "homepage", label: "Homepage" },
     { key: "private", label: "Öffentlich" },
     { key: "archived", label: "Archiviert" },
+    { key: "stargazers_count", label: "Stars" },
     { key: "base3utf8", label: "Topic base3-utf8" },
     { key: "base3site", label: "Topic base3-site" },
     { key: "base3manager", label: "Topic base3-manager" },

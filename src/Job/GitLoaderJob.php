@@ -148,6 +148,8 @@ class GitLoaderJob implements IJob, ICheck {
 			foreach ($data as $key => $repo) {
 				if (isset($repo['web_url']) && !isset($repo['html_url']))
 					$data[$key]['html_url'] = $repo['web_url'];
+				if (isset($repo['star_count']) && !isset($repo['stargazers_count']))
+					$data[$key]['stargazers_count'] = $repo['star_count'];
 			}
 
 			$repositories = array_merge($repositories, $data);
