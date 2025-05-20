@@ -186,6 +186,7 @@ var availableColumns = [
     { key: "homepage", label: "Homepage" },
     { key: "private", label: "Öffentlich" },
     { key: "archived", label: "Archiviert" },
+    { key: "is_template", label: "Template" },
     { key: "stargazers_count", label: "Stars" },
     { key: "base3utf8", label: "Topic base3-utf8" },
     { key: "base3site", label: "Topic base3-site" },
@@ -252,7 +253,7 @@ function buildHeaderAndFilters() {
                 </select>
             `);
             $filterElement.val(val); // aktuellen Wert setzen
-        } else if (['archived', 'base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private', 'base3packagist', 'base3start'].includes(key)) {
+        } else if (['archived', 'is_template', 'base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private', 'base3packagist', 'base3start'].includes(key)) {
             $filterElement = $(`
                 <select class="filter-input" data-filter="${key}">
                     <option value="">Alle</option>
@@ -340,7 +341,7 @@ function buildHeaderAndFilters() {
                     } else if (key === 'private') {
                         const isPublic = val === 'false';
                         val = isPublic ? '✅' : '❌';
-                    } else if (['archived', 'base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private', 'base3packagist', 'base3start'].includes(key)) {
+                    } else if (['archived', 'is_template', 'base3utf8', 'base3site', 'base3manager', 'base3public', 'base3private', 'base3packagist', 'base3start'].includes(key)) {
                         const hasUtf8 = val === 'true';
                         val = hasUtf8 ? '✅' : '❌';
                     }
