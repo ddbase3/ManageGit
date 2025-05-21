@@ -4,22 +4,19 @@ namespace ManageGit\Connector;
 
 use Base3\Api\IBase;
 use Base3\Api\IOutput;
+use Base3\Api\IRequest;
 use Base3\Configuration\Api\IConfiguration;
 use Base3\Accesscontrol\Api\IAccesscontrol;
 
 class GitConnector implements IOutput {
 
-    private $configuration;
-    private $accesscontrol;
     private $defaultPerPage = 10;
 
     public function __construct(
-        IAccesscontrol $accesscontrol,
-        IConfiguration $configuration
-    ) {
-        $this->accesscontrol = $accesscontrol;
-        $this->configuration = $configuration;
-    }
+        private readonly IAccesscontrol $accesscontrol,
+        private readonly IConfiguration $configuration,
+        private readonly IRequest $request
+    ) {}
 
     // Implementation of IBase
 
@@ -68,8 +65,8 @@ class GitConnector implements IOutput {
         });
 
         // Sortierung
-        $sort = $_GET['sort'] ?? 'name';
-        $direction = strtolower($_GET['direction'] ?? 'asc');
+        $sort = $this->request->get('sort', 'name');
+        $direction = strtolower($this->request->get('direction', 'asc'));
         usort($repos, function ($a, $b) use ($sort, $direction) {
             $aVal = strtolower($a[$sort] ?? '');
             $bVal = strtolower($b[$sort] ?? '');
@@ -77,7 +74,7 @@ class GitConnector implements IOutput {
         });
 
 	// Filter
-        $filters = $_GET['filter'] ?? [];
+        $filters = $this->request->get('filter', []);
         $repos = array_filter($repos, function ($repo) use ($filters) {
             foreach ($filters as $key => $val) {
                 if (!isset($repo[$key])) return false;
@@ -90,7 +87,7 @@ class GitConnector implements IOutput {
         $total = count($repos);
         $perPage = $this->defaultPerPage;
         $totalPages = ceil($total / $perPage);
-        $page = min(max(1, intval($_GET['page'] ?? 1)), $totalPages);
+        $page = min(max(1, intval($this->request->get('page', 1))), $totalPages);
         $offset = ($page - 1) * $perPage;
         $pagedRepos = array_slice($repos, $offset, $perPage);
 
