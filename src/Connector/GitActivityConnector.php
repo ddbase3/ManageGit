@@ -14,7 +14,7 @@ class GitActivityConnector implements IOutput {
         private IConfiguration $configuration
     ) {}
 
-    public function getName(): string {
+    public static function getName(): string {
         return "gitactivityconnector";
     }
 

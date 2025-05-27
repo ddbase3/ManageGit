@@ -8,7 +8,7 @@ class GitHeaderControl extends AbstractHeaderControl {
 
         // Implementation of IBase
 
-        public function getName(): string {
+        public static function getName(): string {
                 return "githeadercontrol";
         }
 
