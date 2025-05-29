@@ -14,7 +14,7 @@ class ManageGitPlugin extends AbstractPlugin {
 
 		$this->container
 
-			->set($this->getName(), $this, IContainer::SHARED)
+			->set(self::getName(), $this, IContainer::SHARED)
 
 			->set(
 				'managegitjobs', // only in container for ICheck
@@ -30,5 +30,4 @@ class ManageGitPlugin extends AbstractPlugin {
 			"Check" => "Ok"
 		);
 	}
-
 }
