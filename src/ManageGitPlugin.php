@@ -2,9 +2,16 @@
 
 namespace ManageGit;
 
+use Base3\Api\IClassMap;
 use Base3\Api\IContainer;
 use Base3\Configuration\Api\IConfiguration;
 use Base3Manager\Plugin\AbstractPlugin;
+use DataHawk\Api\IReportQueryService;
+use DataHawk\Api\IReportSchemaProvider;
+use DataHawk\Service\DataHawkMicroservice;
+use DataHawk\Schema\DataHawkSchemaMicroservice;
+use Vizion\Api\IReportConfigProvider;
+use Vizion\Service\FileReportConfigProvider;
 
 class ManageGitPlugin extends AbstractPlugin {
 
@@ -20,7 +27,24 @@ class ManageGitPlugin extends AbstractPlugin {
 				'managegitjobs', // only in container for ICheck
 				array(
 					function() { return new \ManageGit\Job\GitLoaderJob($this->container->get(IConfiguration::class)); }
-				));
+				))
+			
+			->set(
+				IReportQueryService::class,
+				fn($c) => new DataHawkMicroservice(
+					$c->get('microserviceserializedhelper')->get('Data', IReportQueryService::class, 'datahawkmicroservice')),
+				IContainer::SHARED)
+
+			->set(
+				IReportSchemaProvider::class,
+				fn($c) => new DataHawkSchemaMicroservice(
+					$c->get('microserviceserializedhelper')->get('Data', IReportSchemaProvider::class, 'datahawkschemamicroservice')),
+				IContainer::SHARED)
+				
+			->set(
+				IReportConfigProvider::class,
+				fn($c) => new FileReportConfigProvider($c->get(IClassMap::class)),
+				IContainer::SHARED);
 	}
 
 	// Implementation of ICheck

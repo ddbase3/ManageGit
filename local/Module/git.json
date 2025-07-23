@@ -6,17 +6,29 @@
         "icon": "plugin/Base3Manager/assets/modulenavi/tool.png",
 	"header": "githeadercontrol",
 	"tabs": [{
-		"tab": "git",
+		"tab": "gitrepos",
 		"name": "Git",
 		"order": 10,
+		"enabled": 1,
+		"content": "gitreposcontentcontrol"
+	}, {
+		"tab": "git-old",
+		"name": "Git (old)",
+		"order": 1000,
 		"enabled": 1,
 		"content": "gitcontentcontrol"
 	}, {
 		"tab": "gitstats",
-		"name": "Git Stats",
+		"name": "Stats",
 		"order": 20,
 		"enabled": 1,
 		"content": "gitstatscontentcontrol"
+	}, {
+		"tab": "gitschema",
+		"name": "Schema",
+		"order": 100,
+		"enabled": 1,
+		"content": "gitschemacontentcontrol"
 	}],
 	"subnavi": [],
         "toolbar": []
