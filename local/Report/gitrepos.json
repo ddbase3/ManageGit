@@ -1,107 +1,68 @@
 {
-  "display": "datatablereportdisplay",
-  "config": {
-    "paging": true,
-    "columnSelector": true
-  },
-  "fields": [
-    {
-      "alias": "repository_name",
-      "element": {
-        "type": "fld",
-        "table": "git_repository",
-        "field": "name"
-      },
-      "config": {
-        "label": "Repository",
-        "sortable": true,
-        "filter": {
-          "type": "text",
-          "placeholder": "Filter Repository"
-        }
-      }
-    },
-    {
-      "alias": "language",
-      "element": {
-        "type": "fld",
-        "table": "git_repository",
-        "field": "language"
-      },
-      "config": {
-        "label": "Language",
-        "sortable": true,
-        "filter": {
-          "type": "text",
-          "placeholder": "Filter Language"
-        }
-      }
-    },
-    {
-      "alias": "license",
-      "element": {
-        "type": "fld",
-        "table": "git_license",
-        "field": "name"
-      },
-      "config": {
-        "label": "License",
-        "sortable": true,
-        "filter": {
-          "type": "text",
-          "placeholder": "Filter License"
-        }
-      }
-    },
-    {
-      "alias": "owner",
-      "element": {
-        "type": "fld",
-        "table": "git_owner",
-        "field": "login"
-      },
-      "config": {
-        "label": "Owner",
-        "sortable": true,
-        "filter": {
-          "type": "text",
-          "placeholder": "Filter Owner"
-        }
-      }
-    },
-    {
-      "alias": "default_branch",
-      "element": {
-        "type": "fld",
-        "table": "git_branch",
-        "field": "name"
-      },
-      "config": {
-        "label": "Branch",
-        "sortable": true,
-        "filter": {
-          "type": "text",
-          "placeholder": "Filter Branch"
-        }
-      }
-    },
-    {
-      "alias": "size",
-      "element": {
-        "type": "fld",
-        "table": "git_repository",
-        "field": "size"
-      },
-      "config": {
-        "label": "Size",
-        "sortable": true,
-        "filter": {
-          "type": "numberrange"
-        }
-      }
-    }
-  ],
-  "from": "git_repository",
-  "where": null
+	"display": "datatablereportdisplay",
+	"config": {
+		"paging": true,
+		"columnSelector": true
+	},
+	"fields": [
+		{
+			"alias": "handle",
+			"element": { "type": "fld", "table": "git_handle", "field": "name" },
+			"config": { "label": "Handle", "sortable": true, "filter": { "type": "text", "placeholder": "Filter Handle" } }
+		}, {
+			"alias": "repository_name",
+			"element": { "type": "fld", "table": "git_repository", "field": "name" },
+			"config": { "label": "Repository", "sortable": true, "filter": { "type": "text", "placeholder": "Filter Repository" } }
+		}, {
+			"alias": "language",
+			"element": { "type": "fld", "table": "git_repository", "field": "language" },
+			"config": { "label": "Language", "sortable": true, "visible": false, "filter": { "type": "text", "placeholder": "Filter Language" } }
+		}, {
+			"alias": "license",
+			"element": { "type": "fld", "table": "git_license", "field": "name" },
+			"config": { "label": "License", "sortable": true, "visible": false, "filter": { "type": "text", "placeholder": "Filter License" } }
+		}, {
+			"alias": "owner",
+			"element": { "type": "fld", "table": "git_owner", "field": "login" },
+			"config": { "label": "Owner", "sortable": true, "visible": false, "filter": { "type": "text", "placeholder": "Filter Owner" } }
+		}, {
+			"alias": "description",
+			"element": { "type": "fld", "table": "git_repository", "field": "description" },
+			"config": { "label": "Description", "sortable": true, "visible": false, "filter": { "type": "text", "placeholder": "Filter Description" } }
+		}, {
+			"alias": "url",
+			"element": { "type": "fld", "table": "git_repository", "field": "html_url" },
+			"config": { "label": "URL", "sortable": true, "filter": { "type": "text", "placeholder": "Filter URL" } }
+		}, {
+			"alias": "default_branch",
+			"element": { "type": "fld", "table": "git_branch", "field": "name" },
+			"config": { "label": "Branch", "sortable": true, "filter": { "type": "text", "placeholder": "Filter Branch" } }
+		}, {
+			"alias": "protected",
+			"element": { "type": "fld", "table": "git_branch", "field": "protected" },
+			"config": { "label": "Protected", "sortable": true, "visible": false, "filter": { "type": "boolean" } }
+		}, {
+			"alias": "last_commit_date",
+			"element": { "type": "fld", "table": "git_branch", "field": "date" },
+			"config": { "label": "Last Commit", "sortable": true, "visible": false, "filter": { "type": "daterange" } }
+		}, {
+			"alias": "commit_message",
+			"element": { "type": "fld", "table": "git_branch", "field": "message" },
+			"config": { "label": "Commit Message", "sortable": true, "visible": false, "filter": { "type": "text", "placeholder": "Filter Message" } }
+		}, {
+			"alias": "size",
+			"element": { "type": "fld", "table": "git_repository", "field": "size" },
+			"config": { "label": "Size", "sortable": true, "filter": { "type": "numberrange" } }
+		}
+	],
+	"from": "git_repository",
+	"where": {
+		"type": "op",
+		"operator": "=",
+		"params": [
+			{ "type": "fld", "table": "git_branch", "field": "is_default" },
+			true
+		]
+	}
 }
 
