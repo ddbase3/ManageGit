@@ -14,6 +14,14 @@
 			"element": { "type": "fld", "table": "git_repository", "field": "name" },
 			"config": { "label": "Repository", "sortable": true, "filter": { "type": "text", "placeholder": "Filter Repository" } }
 		}, {
+			"alias": "private",
+			"element": { "type": "fld", "table": "git_repository", "field": "private" },
+			"config": { "label": "Private", "sortable": true, "visible": false, "filter": { "type": "boolean" } }
+		}, {
+			"alias": "archived",
+			"element": { "type": "fld", "table": "git_repository", "field": "archived" },
+			"config": { "label": "Archived", "sortable": true, "visible": false, "filter": { "type": "boolean" } }
+		}, {
 			"alias": "language",
 			"element": { "type": "fld", "table": "git_repository", "field": "language" },
 			"config": { "label": "Language", "sortable": true, "visible": false, "filter": { "type": "text", "placeholder": "Filter Language" } }
@@ -33,6 +41,28 @@
 			"alias": "url",
 			"element": { "type": "fld", "table": "git_repository", "field": "html_url" },
 			"config": { "label": "URL", "sortable": true, "filter": { "type": "text", "placeholder": "Filter URL" } }
+		}, {
+			"alias": "homepage",
+			"element": { "type": "fld", "table": "git_repository", "field": "homepage" },
+			"config": { "label": "Homepage", "sortable": true, "visible": false, "filter": { "type": "text", "placeholder": "Filter URL" } }
+		}, {
+			"alias": "stars",
+			"element": { "type": "fld", "table": "git_repository", "field": "stargazers_count" },
+			"config": { "label": "Stars", "sortable": true, "filter": { "type": "numberrange" } }
+		}, {
+			"alias": "watchers",
+			"element": { "type": "fld", "table": "git_repository", "field": "watchers_count" },
+			"config": { "label": "Watchers", "sortable": true, "filter": { "type": "numberrange" } }
+		}, {
+			"alias": "tags",
+			"element": {
+				"type": "fn",
+				"function": "JSON_ARRAYAGG",
+				"params": [
+					{ "type": "fld", "table": "git_topic", "field": "topic", "variant": "optional" }
+				], "distinct": true
+			},
+			"config": { "label": "Tags", "sortable": false, "visible": false, "filter": { "type": "tags" } }
 		}, {
 			"alias": "default_branch",
 			"element": { "type": "fld", "table": "git_branch", "field": "name" },
@@ -63,6 +93,9 @@
 			{ "type": "fld", "table": "git_branch", "field": "is_default" },
 			true
 		]
-	}
+	},
+	"group_by": [
+		{ "type": "fld", "table": "git_repository", "field": "id" }
+	]
 }
 
