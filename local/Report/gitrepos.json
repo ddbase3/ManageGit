@@ -85,7 +85,7 @@
 			"config": { "label": "Size", "sortable": true, "filter": { "type": "numberrange" } }
 		}
 	],
-	"from": "git_repository",
+	"table": "git_repository",
 	"where": {
 		"type": "op",
 		"operator": "=",
