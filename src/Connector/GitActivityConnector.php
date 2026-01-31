@@ -18,7 +18,7 @@ class GitActivityConnector implements IOutput {
         return "gitactivityconnector";
     }
 
-    public function getOutput($out = "html") {
+    public function getOutput(string $out = 'html', bool $final = false): string {
         if ($out !== "json") return null;
         if (!$this->accesscontrol->getUserId()) return null;
 
@@ -82,4 +82,3 @@ for ($i = 11; $i >= 0; $i--) {
         return "Liefert eine JSON-Liste: Repositories mit letzter Aktivität (im Default-Branch) pro Monat.";
     }
 }
-

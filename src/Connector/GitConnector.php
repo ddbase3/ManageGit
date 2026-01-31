@@ -26,7 +26,7 @@ class GitConnector implements IOutput {
 
     // Implementation of IOutput
 
-    public function getOutput($out = "html") {
+    public function getOutput(string $out = 'html', bool $final = false): string {
         if ($out !== "json") return null;
         if (!$this->accesscontrol->getUserId()) return null;
 
@@ -100,7 +100,7 @@ class GitConnector implements IOutput {
         ]);
     }
 
-    public function getHelp() {
+    public function getHelp(): string {
         return "Liefert eine Liste der Git-Repositories als JSON (aus repositories.json). Optional: ?sort=name&direction=asc&page=1";
     }
 }

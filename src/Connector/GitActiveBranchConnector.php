@@ -22,7 +22,7 @@ class GitActiveBranchConnector implements IOutput {
 
     // Implementation of IOutput
 
-    public function getOutput($out = "html") {
+    public function getOutput(string $out = 'html', bool $final = false): string {
         if ($out !== "json") return null;
         if (!$this->accesscontrol->getUserId()) return null;
 
@@ -72,7 +72,7 @@ class GitActiveBranchConnector implements IOutput {
         return json_encode($result);
     }
 
-    public function getHelp() {
+    public function getHelp(): string {
         return "Gibt die Anzahl Repositories pro Default-Branch aus, für Branches wie 'main', 'master', 'v1', 'v2', '54', '54_dev', etc. Format: [{branch: 'main', count: 3}, ...]";
     }
 
