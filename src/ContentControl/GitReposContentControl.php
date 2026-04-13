@@ -3,6 +3,7 @@
 namespace ManageGit\ContentControl;
 
 use Base3\Api\IMvcView;
+use Base3\LinkTarget\Api\ILinkTargetService;
 use Base3Manager\ContentControl\AbstractContentControl;
 use Base3Manager\Service\Base3Manager;
 use Vizion\Api\IReportDisplay;
@@ -12,9 +13,10 @@ class GitReposContentControl extends AbstractContentControl {
         public function __construct(
                 protected IMvcView $view,
 		protected Base3Manager $base3manager,
+		protected ILinkTargetService $linktargetservice,
 		private readonly IReportDisplay $reportdisplay
         ) {
-                parent::__construct($view, $base3manager);
+                parent::__construct($view, $base3manager, $linktargetservice);
         }
 
         // Implementation of IBase

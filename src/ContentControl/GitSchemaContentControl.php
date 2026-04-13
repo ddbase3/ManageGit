@@ -5,6 +5,7 @@ namespace ManageGit\ContentControl;
 use Base3\Api\IClassMap;
 use Base3\Api\IDisplay;
 use Base3\Api\IMvcView;
+use Base3\LinkTarget\Api\ILinkTargetService;
 use Base3Manager\Service\Base3Manager;
 use Base3Manager\ContentControl\AbstractContentControl;
 
@@ -13,9 +14,10 @@ class GitSchemaContentControl extends AbstractContentControl {
 	public function __construct(
 		protected IMvcView $view,
 		protected Base3Manager $base3manager,
+		protected ILinkTargetService $linktargetservice,
 		private readonly IClassMap $classmap
 	) {
-		parent::__construct($view, $base3manager);
+		parent::__construct($view, $base3manager, $linktargetservice);
 	}
 
         // Implementation of IBase
