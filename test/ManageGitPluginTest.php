@@ -5,6 +5,11 @@ namespace ManageGit\Test;
 use PHPUnit\Framework\TestCase;
 use ManageGit\ManageGitPlugin;
 use Base3\Api\IContainer;
+use Base3\Api\IClassMap;
+use Base3\Api\IModuleRegistry;
+use Base3\Core\ServiceLocator;
+use Vizion\Api\IReportConfigProvider;
+use Vizion\Service\FileReportConfigProvider;
 
 class ManageGitPluginTest extends TestCase
 {
@@ -16,6 +21,39 @@ class ManageGitPluginTest extends TestCase
         $plugin->init();
 
         $this->assertTrue(true);
+    }
+
+    public function testReportConfigProviderUsesModuleRegistryInsteadOfClassMap()
+    {
+        $modulePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'base3_managegit_' . uniqid('', true);
+        $configDirectory = $modulePath . DIRECTORY_SEPARATOR . 'local' . DIRECTORY_SEPARATOR . 'Vizion';
+        $this->assertTrue(mkdir($configDirectory, 0700, true));
+        $reportFile = $configDirectory . DIRECTORY_SEPARATOR . 'managegit_registry_test.json';
+
+        try {
+            $this->assertNotFalse(file_put_contents($reportFile, '{"module_registry":true}'));
+
+            $moduleRegistry = $this->createStub(IModuleRegistry::class);
+            $moduleRegistry->method('getModuleNames')->willReturn(['ManageGit']);
+            $moduleRegistry->method('getModulePath')->willReturn($modulePath);
+
+            $container = new ServiceLocator();
+            $container->set(IModuleRegistry::class, $moduleRegistry, IContainer::SHARED);
+            $container->set(IClassMap::class, $this->createStub(IClassMap::class), IContainer::SHARED);
+
+            (new ManageGitPlugin($container))->init();
+            $provider = $container->get(IReportConfigProvider::class);
+
+            $this->assertInstanceOf(FileReportConfigProvider::class, $provider);
+            $this->assertSame(['module_registry' => true], $provider->getConfig('managegit_registry_test'));
+            $this->assertSame($provider, $container->get(IReportConfigProvider::class));
+        }
+        finally {
+            if (is_file($reportFile)) unlink($reportFile);
+            if (is_dir($configDirectory)) rmdir($configDirectory);
+            if (is_dir($modulePath . DIRECTORY_SEPARATOR . 'local')) rmdir($modulePath . DIRECTORY_SEPARATOR . 'local');
+            if (is_dir($modulePath)) rmdir($modulePath);
+        }
     }
 
     public function testCheckDependencies()

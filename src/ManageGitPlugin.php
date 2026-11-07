@@ -2,7 +2,7 @@
 
 namespace ManageGit;
 
-use Base3\Api\IClassMap;
+use Base3\Api\IModuleRegistry;
 use Base3\Api\IContainer;
 use Base3\Configuration\Api\IConfiguration;
 use Base3Manager\Plugin\AbstractPlugin;
@@ -43,7 +43,7 @@ class ManageGitPlugin extends AbstractPlugin {
 				
 			->set(
 				IReportConfigProvider::class,
-				fn($c) => new FileReportConfigProvider($c->get(IClassMap::class)),
+				fn($c) => new FileReportConfigProvider($c->get(IModuleRegistry::class)),
 				IContainer::SHARED);
 	}
 

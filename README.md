@@ -17,3 +17,15 @@ endpoint = "https://gitlab.example.com/api/v4"
 platform = "gitlab"
 ```
 
+
+
+## Report configuration provider
+
+`ManageGitPlugin` registers `Vizion\Api\IReportConfigProvider` with
+`Vizion\Service\FileReportConfigProvider`. This provider receives the
+shared framework `Base3\Api\IModuleRegistry` from the standalone
+BASE3 bootstrap. It resolves report JSON files through module roots under
+`local/Vizion/<report>.json`; the class map does not provide filesystem paths.
+
+The registration change is limited to dependency injection: it does not
+migrate data, modify git account tokens or change user permissions.
