@@ -1,11 +1,25 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace ManageGit\Connector;
+/***********************************************************************
+ * This file is part of ManageGit for BASE3 Framework.
+ *
+ * ManageGit provides Git repository management controls.
+ * It composes existing services and repository utilities.
+ * The module contributes its own manager displays.
+ *
+ * Developed by Daniel Dahme
+ * Licensed under GPL-3.0
+ * https://www.gnu.org/licenses/gpl-3.0.en.html
+ *
+ * https://base3.de
+ ***********************************************************************/
 
-use Base3\Api\IBase;
-use Base3\Api\IOutput;
-use Base3\Configuration\Api\IConfiguration;
-use Base3\Accesscontrol\Api\IAccesscontrol;
+namespace Base3\ManageGit\Connector;
+
+use Base3\CoreFoundation\Api\IBase;
+use Base3\CoreFoundation\Api\IOutput;
+use Base3\CoreFoundation\Configuration\Api\IConfiguration;
+use Base3\CoreFoundation\Accesscontrol\Api\IAccesscontrol;
 
 class GitActiveBranchConnector implements IOutput {
 

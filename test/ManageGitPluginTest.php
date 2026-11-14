@@ -1,15 +1,29 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace ManageGit\Test;
+/***********************************************************************
+ * This file is part of ManageGit for BASE3 Framework.
+ *
+ * ManageGit provides Git repository management controls.
+ * It composes existing services and repository utilities.
+ * The module contributes its own manager displays.
+ *
+ * Developed by Daniel Dahme
+ * Licensed under GPL-3.0
+ * https://www.gnu.org/licenses/gpl-3.0.en.html
+ *
+ * https://base3.de
+ ***********************************************************************/
+
+namespace Base3\ManageGit\Test;
 
 use PHPUnit\Framework\TestCase;
-use ManageGit\ManageGitPlugin;
-use Base3\Api\IContainer;
-use Base3\Api\IClassMap;
-use Base3\Api\IModuleRegistry;
+use Base3\ManageGit\ManageGitPlugin;
+use Base3\CoreFoundation\Api\IContainer;
+use Base3\CoreFoundation\Api\IClassMap;
+use Base3\CoreFoundation\Api\IModuleRegistry;
 use Base3\Core\ServiceLocator;
-use Vizion\Api\IReportConfigProvider;
-use Vizion\Service\FileReportConfigProvider;
+use Base3\Vizion\Api\IReportConfigProvider;
+use Base3\Vizion\Service\FileReportConfigProvider;
 
 class ManageGitPluginTest extends TestCase
 {

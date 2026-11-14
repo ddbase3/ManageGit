@@ -1,10 +1,24 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace ManageGit\Job;
+/***********************************************************************
+ * This file is part of ManageGit for BASE3 Framework.
+ *
+ * ManageGit provides Git repository management controls.
+ * It composes existing services and repository utilities.
+ * The module contributes its own manager displays.
+ *
+ * Developed by Daniel Dahme
+ * Licensed under GPL-3.0
+ * https://www.gnu.org/licenses/gpl-3.0.en.html
+ *
+ * https://base3.de
+ ***********************************************************************/
 
-use Base3\Worker\Api\IJob;
-use Base3\Configuration\Api\IConfiguration;
-use Base3\Api\ICheck;
+namespace Base3\ManageGit\Job;
+
+use Base3\CoreFoundation\Worker\Api\IJob;
+use Base3\CoreFoundation\Configuration\Api\IConfiguration;
+use Base3\CoreFoundation\Api\ICheck;
 
 class GitLoaderJob implements IJob, ICheck {
 

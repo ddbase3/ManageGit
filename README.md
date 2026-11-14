@@ -21,9 +21,9 @@ platform = "gitlab"
 
 ## Report configuration provider
 
-`ManageGitPlugin` registers `Vizion\Api\IReportConfigProvider` with
-`Vizion\Service\FileReportConfigProvider`. This provider receives the
-shared framework `Base3\Api\IModuleRegistry` from the standalone
+`ManageGitPlugin` registers `Base3\Vizion\Api\IReportConfigProvider` with
+`Base3\Vizion\Service\FileReportConfigProvider`. This provider receives the
+shared framework `Base3\CoreFoundation\Api\IModuleRegistry` from the standalone
 BASE3 bootstrap. It resolves report JSON files through module roots under
 `local/Vizion/<report>.json`; the class map does not provide filesystem paths.
 

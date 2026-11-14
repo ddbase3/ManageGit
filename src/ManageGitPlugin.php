@@ -1,17 +1,32 @@
 <?php declare(strict_types=1);
 
-namespace ManageGit;
+/***********************************************************************
+ * This file is part of ManageGit for BASE3 Framework.
+ *
+ * ManageGit provides Git repository management controls.
+ * It composes existing services and repository utilities.
+ * The module contributes its own manager displays.
+ *
+ * Developed by Daniel Dahme
+ * Licensed under GPL-3.0
+ * https://www.gnu.org/licenses/gpl-3.0.en.html
+ *
+ * https://base3.de
+ ***********************************************************************/
 
-use Base3\Api\IModuleRegistry;
-use Base3\Api\IContainer;
-use Base3\Configuration\Api\IConfiguration;
-use Base3Manager\Plugin\AbstractPlugin;
-use DataHawk\Api\IReportQueryService;
-use DataHawk\Api\IReportSchemaProvider;
-use DataHawk\Service\DataHawkMicroservice;
-use DataHawk\Schema\DataHawkSchemaMicroservice;
-use Vizion\Api\IReportConfigProvider;
-use Vizion\Service\FileReportConfigProvider;
+
+namespace Base3\ManageGit;
+
+use Base3\CoreFoundation\Api\IModuleRegistry;
+use Base3\CoreFoundation\Api\IContainer;
+use Base3\CoreFoundation\Configuration\Api\IConfiguration;
+use Base3\Base3Manager\Plugin\AbstractPlugin;
+use Base3\DataHawk\Api\IReportQueryService;
+use Base3\DataHawk\Api\IReportSchemaProvider;
+use Base3\DataHawk\Service\DataHawkMicroservice;
+use Base3\DataHawk\Schema\DataHawkSchemaMicroservice;
+use Base3\Vizion\Api\IReportConfigProvider;
+use Base3\Vizion\Service\FileReportConfigProvider;
 
 class ManageGitPlugin extends AbstractPlugin {
 
@@ -26,7 +41,7 @@ class ManageGitPlugin extends AbstractPlugin {
 			->set(
 				'managegitjobs', // only in container for ICheck
 				array(
-					function() { return new \ManageGit\Job\GitLoaderJob($this->container->get(IConfiguration::class)); }
+					function() { return new \Base3\ManageGit\Job\GitLoaderJob($this->container->get(IConfiguration::class)); }
 				))
 			
 			->set(

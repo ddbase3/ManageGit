@@ -1,13 +1,28 @@
 <?php declare(strict_types=1);
 
-namespace ManageGit\ContentControl;
+/***********************************************************************
+ * This file is part of ManageGit for BASE3 Framework.
+ *
+ * ManageGit provides Git repository management controls.
+ * It composes existing services and repository utilities.
+ * The module contributes its own manager displays.
+ *
+ * Developed by Daniel Dahme
+ * Licensed under GPL-3.0
+ * https://www.gnu.org/licenses/gpl-3.0.en.html
+ *
+ * https://base3.de
+ ***********************************************************************/
 
-use Base3\Api\IClassMap;
-use Base3\Api\IDisplay;
-use Base3\Api\IMvcView;
-use Base3\LinkTarget\Api\ILinkTargetService;
-use Base3Manager\Service\Base3Manager;
-use Base3Manager\ContentControl\AbstractContentControl;
+
+namespace Base3\ManageGit\ContentControl;
+
+use Base3\CoreFoundation\Api\IClassMap;
+use Base3\CoreFoundation\Api\IDisplay;
+use Base3\CoreFoundation\Api\IMvcView;
+use Base3\CoreFoundation\LinkTarget\Api\ILinkTargetService;
+use Base3\Base3Manager\Service\Base3Manager;
+use Base3\Base3Manager\ContentControl\AbstractContentControl;
 
 class GitSchemaContentControl extends AbstractContentControl {
 

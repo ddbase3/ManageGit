@@ -1,0 +1,14 @@
+{
+	"manifestVersion": 1,
+	"name": "ManageGit",
+	"namespace": "Base3\\ManageGit",
+	"version": "0.0.0",
+	"description": "ManageGit provides Git repository management controls. It composes existing services and repository utilities. The module contributes its own manager displays.",
+	"license": "GPL-3.0",
+	"dependencies": {
+		"Base3Manager": ">=0.0.0",
+		"CoreFoundation": ">=4.10.0",
+		"DataHawk": ">=4.7.0",
+		"Vizion": ">=4.7.0"
+	}
+}
